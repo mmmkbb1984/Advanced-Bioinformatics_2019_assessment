@@ -1,0 +1,247 @@
+---
+title: "Advanced Bioinformatics_2019_assessment"
+author: "9532"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '3'
+  html_notebook:
+    code_folding: hide
+    fig_caption: yes
+    highlight: tango
+    number_sections: no
+    theme: sandstone
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+<style>
+h1 {background: darkblue;color: white;padding-left: 7px;}
+h2 {color: darkblue;}
+.code-folding-btn {display: none;}
+</style>
+
+<script>
+  function show_span(id) {
+    var x = document.getElementById(id);
+    if (x.style.display === 'none') {
+      x.style.display = 'inline';
+    } else {
+      x.style.display = 'none';
+    }
+  }
+  function myFunction(id) {
+    var x = document.getElementById(id);
+    if (x.style.display === 'none') {
+        x.style.display = 'block';
+    } else {
+        x.style.display = 'none';
+    }
+  }
+</script>
+
+```{r include=FALSE}
+# About <style> chunk above:
+# * provides custom formatting for level-1 and level-2 headers
+# * hides the 'code' buttons next to every code chunk in the html output; leaves only one 'code' button at the top of the html notebook.
+
+# About the <script> chunk at the top and bottom of the file:
+# * allows to insert <div>'s whose content visbility is toggled with a button.
+# * I use this to show/hide te output of sessionInfo() at the end of the script (see below)
+```
+
+
+```{r include=FALSE}
+# RMARKDOWN HELP
+# Rmarkdown:
+# https://bookdown.org/yihui/rmarkdown/
+
+# Chunk options:
+# https://yihui.name/knitr/options
+```
+
+```{r cleanup, warning=FALSE, message=FALSE, error=FALSE}
+# CHECK R VERSION
+# stopifnot(R.version.string == "R version 3.4.3 (2017-11-30)")
+
+# CLEANUP
+# Clear all variables:
+rm(list=ls(all=TRUE))
+
+# Unload current packages:
+if (!is.null(names(utils::sessionInfo()[["otherPkgs"]]))) pacman::p_unload("all")
+```
+
+```{r setup}
+# KNITR DEFAULTS
+knitr::opts_chunk$set(eval = TRUE, fig.height = 10)
+```
+
+```{r packages, results="hide", warning=FALSE, message=FALSE, error=FALSE}
+# LOAD PACKAGES:
+library(magrittr)
+library(dplyr)
+# library(ggplot2)
+# library(calendar)
+# library(stringr)
+# library(rstudioapi)
+```
+
+
+
+# Task 1: Sum of all integers between 5 and 55. 
+
+```{r}
+T1 <- sum(5:55)
+print(T1)
+```
+
+# Task 2: calculates the sum of all integers between 5 and n
+
+```{r}
+# Define a simple function
+
+sumfun <- function(n){sum(5:n)}
+
+# when n = 10, 20 and 100
+
+sumfun(10)
+sumfun(20)
+sumfun(100)
+```
+
+
+# Task 3: R script using a for loop to calculate and print out the first 12 entries of the Fibonacci series. 
+
+```{r}
+my.a <- c(1,1)
+for (i in 1:10) {
+  my.a <- c(my.a,my.a[i] + my.a[i+1])
+  print(my.a)
+}
+print(my.a)
+```
+
+
+# Task 4: With the mtcars dataset bundled with R, use ggplot to generate a box of miles per gallon (in the variable mpg) as a function of the number of gears (in the variable gear). Tip: use the as.factor function to convert the gear variable from numeric into factor. For bonus point: use the fill aesthetic to colour bars by number of gears.
+
+```{r}
+# Load the ggplot package
+library(ggplot2)
+# Explore the mtcars data frame with str()
+str(mtcars)
+#as.factor(mtcars$gear)
+```
+
+```{r}
+# Boxplot mpg ~ gear
+
+ggplot(mtcars, aes(x=factor(gear),y=mpg,fill=factor(gear)))+
+  geom_boxplot(notch=F)+ 
+  scale_x_discrete("Number of Gears")+
+  scale_y_continuous("Miles per Gallon")+theme(
+  axis.title.x = element_text(color = "blue", size = 14, face = "bold"),
+  axis.title.y = element_text(color = "red", size = 14, face = "bold")
+  )+
+  scale_y_continuous(limits = c(0,35))
+  ggtitle("MPG by Number of Gears")
+```
+
+
+
+# Task 5. Using the cars dataset and the function lm, fit a linear relationship between speed (in units of mph) and breaking distance (in units of feet) in the variable distance. What are the fitted slope and intercept of the line, and their standard deviations? 
+
+```{r}
+head(cars)
+dim(cars)
+class(cars)
+```
+
+Simple regression model is a straight line. The formula is Y=s0+(s1x1)
+Where s0 -> *y-intercept of the line, s1-> *fitted slope, x1 -> *input variable speed(mph) and Y -> *output variable dist(feet).
+
+```{r}
+# The Linear Model Function
+
+cor(cars$speed, cars$dist) #  0.8068949 indicate high positive correlation between speed and distance
+cars.lm <- lm(cars$dist ~ cars$speed)
+print(cars.lm)
+summary(cars.lm)
+sd(cars$speed) #5.287644
+sd(cars$dist) #25.76938
+sd(resid(cars.lm))
+```
+
+Answer: The fitted slope (s1) is *3.932
+        and intercept of the line (s0) is *-17.579
+        and their standard deviations is *15.22184
+
+
+
+# Task 6. Use ggplot to plot the data points from Task 6 and the linear fit. 
+
+```{r}
+cars %>%
+  mutate( my_model = predict(cars.lm) ) %>%
+  ggplot() +
+  geom_point( shape=20, aes(speed, dist) ) +
+  ggtitle("Linear Fit Graph Speed vs Dist") +
+  scale_color_discrete(guide=FALSE) + 
+  geom_line( aes(speed, my_model) ) 
+```
+
+
+
+# Task 7. Again using the cars dataset, now use linear regression (lm) to estimate the average reaction time for the driver to start breaking (in seconds). To simplify matters you may assume that once breaking commences, breaking distance is proportional to the square of the speed. You may also use that 1 mile = 5280 feet and 1h = 3600 seconds. Note that you'll need to use the I() function in the regression formula to make sure any non-linear terms gets treated literally, rather than as combinations of factors (e.g. I(x^2) for a term quadratic in the variable x). Do you get reasonable results? Finally, use ggplot to plot the data points and the fitted relationship.  
+
+
+
+```{r}
+cars$new_speed <- cars$speed * (5280/3600)
+y <- cars$dist
+x <- cars$new_speed
+x2 <- I(x^2)
+cars_qm <- lm(y ~ 0 + x + x2)
+summary(cars_qm)
+```
+
+Answer: I do NOT get reasonable results. 
+
+
+```{r}
+library(ggplot2)
+ggplot(cars,aes(new_speed,dist)) +
+   geom_point() +
+   geom_smooth(method="lm", formula="y~0+x+I(x^2)")
+```
+
+
+
+
+
+
+
+
+## Session info  
+<button class="button" onclick="myFunction('DIV_5')">Show/hide session info</button>
+<div id="DIV_5" class="div_default_hide">
+```{r print_date_and_time}
+Sys.time()
+```
+
+```{r print_session_info}
+# sessionInfo()
+devtools::session_info()
+```
+</div>
+
+<script>
+var divsToHide = document.getElementsByClassName("div_default_hide");
+for(var i = 0; i < divsToHide.length; i++)
+    {
+    divsToHide[i].style.display = 'none';
+    }
+</script>
