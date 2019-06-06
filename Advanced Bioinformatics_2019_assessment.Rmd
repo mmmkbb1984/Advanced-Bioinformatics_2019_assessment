@@ -1,6 +1,6 @@
 ---
 title: "Advanced Bioinformatics_2019_assessment"
-author: "M.Khoo, 9532"
+author: "9532"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -133,6 +133,7 @@ print(my.a)
 library(ggplot2)
 # Explore the mtcars data frame with str()
 str(mtcars)
+#as.factor(mtcars$gear)
 ```
 
 ```{r}
@@ -141,7 +142,11 @@ str(mtcars)
 ggplot(mtcars, aes(x=factor(gear),y=mpg,fill=factor(gear)))+
   geom_boxplot(notch=F)+ 
   scale_x_discrete("Number of Gears")+
-  scale_y_continuous("Miles per Gallon")+
+  scale_y_continuous("Miles per Gallon")+theme(
+  axis.title.x = element_text(color = "blue", size = 14, face = "bold"),
+  axis.title.y = element_text(color = "red", size = 14, face = "bold")
+  )+
+  scale_y_continuous(limits = c(0,35))
   ggtitle("MPG by Number of Gears")
 ```
 
@@ -167,11 +172,12 @@ print(cars.lm)
 summary(cars.lm)
 sd(cars$speed) #5.287644
 sd(cars$dist) #25.76938
+sd(resid(cars.lm))
 ```
 
-Answer: The fitted slope (s1) is 3.932
-        and intercept of the line (s0) is -17.579
-        and their standard deviations 
+Answer: The fitted slope (s1) is *3.932
+        and intercept of the line (s0) is *-17.579
+        and their standard deviations is *15.22184
 
 
 
@@ -181,8 +187,10 @@ Answer: The fitted slope (s1) is 3.932
 cars %>%
   mutate( my_model = predict(cars.lm) ) %>%
   ggplot() +
-  geom_point( aes(speed, dist) ) +
-  geom_line( aes(speed, my_model)  )
+  geom_point( shape=20, aes(speed, dist) ) +
+  ggtitle("Linear Fit Graph Speed vs Dist") +
+  scale_color_discrete(guide=FALSE) + 
+  geom_line( aes(speed, my_model) ) 
 ```
 
 
