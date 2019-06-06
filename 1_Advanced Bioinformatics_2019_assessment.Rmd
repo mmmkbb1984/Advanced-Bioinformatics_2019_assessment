@@ -172,7 +172,6 @@ print(cars.lm)
 summary(cars.lm)
 sd(cars$speed) #5.287644
 sd(cars$dist) #25.76938
-sd(resid(cars.lm))
 ```
 
 Answer: The fitted slope (s1) is *3.932
