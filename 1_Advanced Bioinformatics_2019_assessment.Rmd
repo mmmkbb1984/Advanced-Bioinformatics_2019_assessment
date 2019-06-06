@@ -177,7 +177,7 @@ sd(resid(cars.lm))
 
 Answer: The fitted slope (s1) is *3.932
         and intercept of the line (s0) is *-17.579
-        and their standard deviations is *15.22184
+        and their standard deviations is *15.38 on 48 degrees of freedom
 
 
 
